@@ -35,9 +35,7 @@ import { LOCATIONS, BUS_TYPES, AVAILABLE_TIMES } from "@/lib/data"
 const formSchema = z.object({
     from: z.string().min(1, "Please select a departure city."),
     to: z.string().min(1, "Please select a destination."),
-    date: z.date({
-        required_error: "A date of travel is required.",
-    }),
+    date: z.date("A date of travel is required."),
     time: z.string().min(1, "Please select a time."),
     busId: z.string().min(1, "Please select a bus."),
 })
