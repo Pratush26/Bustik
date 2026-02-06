@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { Armchair } from "lucide-react"
+import { toast } from "sonner"
 
 interface Seat {
     id: string
@@ -21,11 +21,10 @@ const generateSeats = (): Seat[] => {
 
     for (let i = 1; i <= rows; i++) {
         colLabels.forEach((col, idx) => {
-            const isBooked = Math.random() < 0.3 // 30% random booked chance
             seats.push({
                 id: `${i}${col}`,
                 number: `${i}${col}`,
-                isBooked,
+                isBooked: false,
                 price: 25 // flat price
             })
         })
@@ -36,11 +35,45 @@ const generateSeats = (): Seat[] => {
 const mockSeats = generateSeats()
 
 interface SeatLayoutProps {
+    busDetails: {
+        id: string,
+        date: string
+    },
     onSeatSelect: (selectedSeats: Seat[]) => void
 }
 
-export function SeatLayout({ onSeatSelect }: SeatLayoutProps) {
+export function SeatLayout({ busDetails, onSeatSelect }: SeatLayoutProps) {
     const [selectedSeats, setSelectedSeats] = useState<string[]>([])
+    const [seats, setSeats] = useState<Seat[]>(generateSeats())
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const fetchBookings = async () => {
+            try {
+                const res = await fetch(`/api/bookings?id=${busDetails.id}&date=${busDetails.date}`, {
+                    cache: "no-store"
+                });
+                if (!res.ok) throw new Error("Failed to fetch");
+                const bookings = await res.json();
+
+                // Extract booked seat numbers
+                const bookedSeatNumbers = bookings.map((b: any) => b.seat);
+
+                // Update seats state
+                setSeats(prev => prev.map(seat => ({
+                    ...seat,
+                    isBooked: bookedSeatNumbers.includes(seat.number)
+                })));
+
+            } catch (err: unknown) {
+                console.error(err)
+                toast.error("Failed to load seat availability")
+            } finally {
+                setLoading(false)
+            }
+        };
+        fetchBookings();
+    }, [busDetails]);
 
     const handleSeatClick = (seat: Seat) => {
         if (seat.isBooked) return
@@ -56,7 +89,7 @@ export function SeatLayout({ onSeatSelect }: SeatLayoutProps) {
         setSelectedSeats(newSelected)
 
         // Find full seat objects to return
-        const selectedSeatObjects = mockSeats.filter(s => newSelected.includes(s.id))
+        const selectedSeatObjects = seats.filter(s => newSelected.includes(s.id))
         onSeatSelect(selectedSeatObjects)
     }
 
@@ -64,7 +97,7 @@ export function SeatLayout({ onSeatSelect }: SeatLayoutProps) {
     const getSeat = (row: number, colIndex: number) => {
         const colLabels = ['A', 'B', 'C', 'D']
         const seatId = `${row}${colLabels[colIndex]}`
-        return mockSeats.find(s => s.id === seatId)
+        return seats.find(s => s.id === seatId)
     }
 
     return (
@@ -135,7 +168,7 @@ function SeatIcon({ seat, isSelected, onClick }: { seat?: Seat, isSelected: bool
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-background hover:bg-muted border-input text-foreground"
             )}
-            title={seat.isBooked ? "Booked" : `Seat ${seat.number} - $${seat.price}`}
+            title={seat.isBooked ? "Booked" : `Seat ${seat.number} - ৳${seat.price}`}
         >
             <Armchair className="w-6 h-6" />
         </button>

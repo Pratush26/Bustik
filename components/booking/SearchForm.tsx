@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { CalendarIcon, MapPin, Bus } from "lucide-react"
+import { CalendarIcon, MapPin, Bus, Clock } from "lucide-react"
 import { format, addDays } from "date-fns"
 
 import { cn } from "@/lib/utils"
@@ -30,7 +30,6 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner"
-import { LOCATIONS, BUS_TYPES, AVAILABLE_TIMES } from "@/lib/data"
 import { useEffect, useState } from "react"
 
 const formSchema = z.object({
@@ -41,44 +40,91 @@ const formSchema = z.object({
     busId: z.string().min(1, "Please select a bus."),
 })
 
+interface BusSchedule {
+    _id: string;
+    from: string;
+    to: string;
+    bus: string;
+    price: number;
+    time: string;
+}
+
 export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema)
     })
-    const [schedule, setSchedule] = useState([])
+
+    const [schedules, setSchedules] = useState<BusSchedule[]>([])
+    const [loading, setLoading] = useState(true)
+
+    // Watched values
+    const selectedFrom = form.watch("from")
+    const selectedTo = form.watch("to")
+    const selectedTime = form.watch("time")
 
     useEffect(() => {
-        const fetchdata = async () => {
+        const fetchSchedules = async () => {
             try {
                 const res = await fetch("/api/schedule", {
                     cache: "no-store"
                 });
                 if (!res.ok) throw new Error("Failed to fetch");
-
                 const result = await res.json();
-                setSchedule(result ?? result);
+                setSchedules(Array.isArray(result) ? result : []);
             } catch (err: unknown) {
-                setSchedule([]);
                 console.error(err)
+                toast.error("Failed to load schedules")
+                setSchedules([]);
+            } finally {
+                setLoading(false)
             }
         };
-        fetchdata();
+        fetchSchedules();
     }, []);
 
+    const fromOptions = Array.from(new Set(schedules.map(s => s.from))).sort();
+    const toOptions = Array.from(new Set(schedules.map(s => s.to))).sort();
+
+    const availableRoutes = schedules.filter(s =>
+        s.from === selectedFrom && s.to === selectedTo
+    );
+
+    const timeOptions = Array.from(new Set(availableRoutes.map(s => s.time))).sort();
+
+    const relevantBuses = selectedTime
+        ? availableRoutes.filter(s => s.time === selectedTime)
+        : availableRoutes;
+
+    const busOptions = Array.from(new Set(relevantBuses.map(s => s.bus)));
+
+    useEffect(() => {
+        form.setValue("time", "")
+        form.setValue("busId", "")
+    }, [selectedFrom, selectedTo, form])
+
+    useEffect(() => {
+        form.setValue("busId", "")
+    }, [selectedTime, form])
+
+
     function onSubmit(data: z.infer<typeof formSchema>) {
-        // Validate different origin/dest
         if (data.from === data.to) {
             toast.error("Origin and Destination cannot be the same")
             return
         }
 
-        // Find detailed bus info
-        const selectedBus = BUS_TYPES.find(b => b.id === data.busId)
+        const scheduleEntry = schedules.find(s =>
+            s.from === data.from &&
+            s.to === data.to &&
+            s.bus === data.busId &&
+            s.time === data.time
+        ) || schedules.find(s => s.bus === data.busId);
 
         onSearch({
             ...data,
-            busName: selectedBus?.name,
-            ticketPrice: selectedBus?.price,
+            busName: data.busId,
+            scheduleId: scheduleEntry?._id,
+            ticketPrice: scheduleEntry?.price || 0,
         })
     }
 
@@ -93,7 +139,7 @@ export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>From</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <div className="flex items-center gap-2">
@@ -103,7 +149,7 @@ export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {LOCATIONS.map(loc => (
+                                        {fromOptions.map(loc => (
                                             <SelectItem key={loc} value={loc}>{loc}</SelectItem>
                                         ))}
                                     </SelectContent>
@@ -119,7 +165,7 @@ export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>To</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <div className="flex items-center gap-2">
@@ -129,7 +175,7 @@ export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {LOCATIONS.map(loc => (
+                                        {toOptions.map(loc => (
                                             <SelectItem key={loc} value={loc}>{loc}</SelectItem>
                                         ))}
                                     </SelectContent>
@@ -189,16 +235,27 @@ export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Time</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    disabled={!selectedFrom || !selectedTo || availableRoutes.length === 0}
+                                >
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Select time" />
+                                            <div className="flex items-center gap-2">
+                                                <Clock className="h-4 w-4 text-muted-foreground" />
+                                                <SelectValue placeholder="Select time" />
+                                            </div>
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {AVAILABLE_TIMES.map(t => (
-                                            <SelectItem key={t} value={t}>{t}</SelectItem>
-                                        ))}
+                                        {timeOptions.length > 0 ? (
+                                            timeOptions.map(t => (
+                                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                                            ))
+                                        ) : (
+                                            <SelectItem value="none" disabled>No schedules available</SelectItem>
+                                        )}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -214,21 +271,32 @@ export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Choose Bus</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    disabled={!selectedFrom || !selectedTo || availableRoutes.length === 0}
+                                >
                                     <FormControl>
                                         <SelectTrigger>
                                             <div className="flex items-center gap-2">
                                                 <Bus className="h-4 w-4 text-muted-foreground" />
-                                                <SelectValue placeholder="Select valid bus" />
+                                                <SelectValue placeholder="Select bus" />
                                             </div>
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {BUS_TYPES.map(bus => (
-                                            <SelectItem key={bus.id} value={bus.id}>
-                                                {bus.name} - ${bus.price}
-                                            </SelectItem>
-                                        ))}
+                                        {busOptions.length > 0 ? (
+                                            busOptions.map(bus => {
+                                                const schedule = availableRoutes.find(s => s.bus === bus && (selectedTime ? s.time === selectedTime : true));
+                                                return (
+                                                    <SelectItem key={bus} value={bus}>
+                                                        {bus} {schedule ? `- ৳${schedule.price}` : ""}
+                                                    </SelectItem>
+                                                )
+                                            })
+                                        ) : (
+                                            <SelectItem value="none" disabled>No buses available</SelectItem>
+                                        )}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -236,7 +304,7 @@ export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
                         )}
                     />
 
-                    <Button type="submit" size="lg" className="w-full">
+                    <Button type="submit" size="lg" className="w-full" disabled={!selectedFrom || !selectedTo || !selectedTime || availableRoutes.length === 0}>
                         Check Available Seats
                     </Button>
                 </div>
