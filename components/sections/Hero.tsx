@@ -1,19 +1,19 @@
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 import Link from "next/link"
 
 export function Hero() {
     return (
-        <section id="home" className="relative min-h-screen flex items-center pt-16 overflow-hidden">
-            {/* Background Patterns/Image could go here */}
+        <section id="home" className="relative min-h-[90vh] flex items-center w-full overflow-hidden">
             <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/5 via-background to-background" />
 
-            <div className="container mx-auto px-4 z-10 grid md:grid-cols-2 gap-12 items-center">
+            <div className="w-11/12 mx-auto z-10 grid md:grid-cols-2 gap-12 items-center">
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-1000">
                     <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
                         The Smartest Way to Travel
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-                        Book Your <span className="text-primary">Bus App</span> Ticket Easily
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+                        Book Your <span className="text-primary">Bus Ticket</span> Easily
                     </h1>
                     <p className="text-muted-foreground text-lg md:text-xl max-w-lg">
                         Experience comfortable and safe journeys. Choose your destination, pick your seat, and travel with confidence.
@@ -44,17 +44,14 @@ export function Hero() {
                     </div>
                 </div>
 
-                <div className="relative hidden md:block h-[500px] w-full animate-in fade-in slide-in-from-right-5 duration-1000 delay-200">
-                    {/* Illustration or Image placeholder */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center border border-border">
-                        <div className="text-center p-8">
-                            <span className="text-9xl block mb-4">🚌</span>
-                            <p className="text-2xl font-bold opacity-50">Just Go.</p>
-                        </div>
-                        {/* Decorative elements */}
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/30 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-secondary/80 rounded-full blur-3xl" />
-                    </div>
+                <div className="relative h-[400px] rounded-2xl overflow-hidden bg-gradient-to-tr from-blue-600/20 to-purple-600/20 flex items-center justify-center">
+                    <Image
+                        src={'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+                        fill
+                        alt="bus image"
+                        priority
+                        className="object-cover grayscale-25 contrast-110"
+                    />
                 </div>
             </div>
         </section>

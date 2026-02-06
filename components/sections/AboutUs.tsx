@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 import Link from "next/link"
 
 export function AboutUs() {
     return (
         <section id="about" className="py-20 bg-muted/30">
-            <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+            <div className="w-11/12 mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
                 <div className="space-y-6">
                     <h2 className="text-3xl font-bold tracking-tight">About Bustik</h2>
                     <h3 className="text-xl text-primary font-medium">Reinventing Bus Travel Experience</h3>
@@ -24,11 +25,12 @@ export function AboutUs() {
                 </div>
 
                 <div className="relative h-[400px] rounded-2xl overflow-hidden bg-gradient-to-tr from-blue-600/20 to-purple-600/20 flex items-center justify-center">
-                    {/* Image Placeholder */}
-                    <div className="text-center">
-                        <span className="text-6xl mb-4 block">🛣️</span>
-                        <p className="font-bold text-xl">Thousands of Happy Journeys</p>
-                    </div>
+                    <Image
+                        src={'https://images.unsplash.com/photo-1557223562-6c77ef16210f?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+                        fill
+                        alt="bus image"
+                        className="object-cover"
+                    />
                 </div>
             </div>
         </section>

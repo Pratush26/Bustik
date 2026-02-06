@@ -38,7 +38,7 @@ export function BookingSection() {
     const totalPrice = selectedSeats.length * (searchData?.ticketPrice || 0)
 
     return (
-        <section id="booking" className="py-20 container mx-auto px-4 min-h-screen">
+        <section id="booking" className="my-32 w-11/12 mx-auto px-4">
             <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold mb-4">Book Your Ticket</h2>
                 <p className="text-muted-foreground">Select your journey details and pick your favorite seat.</p>

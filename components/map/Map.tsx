@@ -19,7 +19,7 @@ const icon = L.icon({
 
 export default function Map() {
     return (
-        <div className="h-[500px] w-full rounded-xl overflow-hidden shadow-lg border z-0">
+        <div className="h-[500px] w-full rounded-xl overflow-hidden shadow-lg border">
             <MapContainer
                 center={[23.8103, 90.4125]}
                 zoom={7}

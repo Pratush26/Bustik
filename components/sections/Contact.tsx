@@ -43,7 +43,7 @@ export function Contact() {
 
     return (
         <section id="contact" className="py-20 bg-muted/30">
-            <div className="container mx-auto px-4">
+            <div className=" w-11/12 mx-auto">
                 <div className="grid md:grid-cols-2 gap-12">
                     <div>
                         <h2 className="text-3xl font-bold mb-4">Contact Us</h2>
