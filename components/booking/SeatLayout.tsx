@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Armchair } from "lucide-react"
 import { toast } from "sonner"
+import { ObjectId } from "mongodb"
 
 interface Seat {
     id: string
@@ -11,16 +12,23 @@ interface Seat {
     isBooked: boolean
     price: number
 }
+interface Bookings {
+    _id: ObjectId
+    passenger: string
+    phone: string
+    seat: string
+    bus: ObjectId
+    date: string
+    createdAt: string
+}
 
-// Generate mock seats for a bus (40 seats, 2x2 layout)
 const generateSeats = (): Seat[] => {
     const seats: Seat[] = []
     const rows = 10
-    const cols = 4 // A, B, aisle, C, D
     const colLabels = ['A', 'B', 'C', 'D']
 
     for (let i = 1; i <= rows; i++) {
-        colLabels.forEach((col, idx) => {
+        colLabels.forEach((col) => {
             seats.push({
                 id: `${i}${col}`,
                 number: `${i}${col}`,
@@ -31,8 +39,6 @@ const generateSeats = (): Seat[] => {
     }
     return seats
 }
-
-const mockSeats = generateSeats()
 
 interface SeatLayoutProps {
     busDetails: {
@@ -45,7 +51,6 @@ interface SeatLayoutProps {
 export function SeatLayout({ busDetails, onSeatSelect }: SeatLayoutProps) {
     const [selectedSeats, setSelectedSeats] = useState<string[]>([])
     const [seats, setSeats] = useState<Seat[]>(generateSeats())
-    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -57,7 +62,7 @@ export function SeatLayout({ busDetails, onSeatSelect }: SeatLayoutProps) {
                 const bookings = await res.json();
 
                 // Extract booked seat numbers
-                const bookedSeatNumbers = bookings.map((b: any) => b.seat);
+                const bookedSeatNumbers = bookings.map((b: Bookings) => b.seat);
 
                 // Update seats state
                 setSeats(prev => prev.map(seat => ({
@@ -68,8 +73,6 @@ export function SeatLayout({ busDetails, onSeatSelect }: SeatLayoutProps) {
             } catch (err: unknown) {
                 console.error(err)
                 toast.error("Failed to load seat availability")
-            } finally {
-                setLoading(false)
             }
         };
         fetchBookings();

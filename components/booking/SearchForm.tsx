@@ -49,7 +49,18 @@ interface BusSchedule {
     time: string;
 }
 
-export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
+interface SearchFormData {
+    from: string;
+    to: string;
+    date: Date;
+    time: string;
+    busId: string;
+    busName: string;
+    scheduleId?: string;
+    ticketPrice: number;
+}
+
+export function SearchForm({ onSearch }: { onSearch: (data: SearchFormData) => void }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema)
     })

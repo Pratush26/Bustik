@@ -20,16 +20,34 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+interface Seat {
+    id: string
+    number: string
+}
+
+interface SearchData {
+    from: string
+    to: string
+    time: string
+    date: Date
+    scheduleId?: string
+    ticketPrice: number
+}
+
 export function BookingSection() {
-    const [searchData, setSearchData] = useState<any>(null)
+    const [searchData, setSearchData] = useState<SearchData | null>(null)
     const [loading, setLoading] = useState(false)
-    const [selectedSeats, setSelectedSeats] = useState<any[]>([])
+    const [selectedSeats, setSelectedSeats] = useState<Seat[]>([])
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [passengerName, setPassengerName] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
     const [bookingLoading, setBookingLoading] = useState(false)
 
-    const handleSearch = (data: any) => {
+    const handleSearch = (data: SearchData) => {
+        if (!data.scheduleId) {
+            toast.error("Schedule ID is missing")
+            return
+        }
         setLoading(true)
         // Mock API call
         setTimeout(() => {
@@ -47,6 +65,11 @@ export function BookingSection() {
     const confirmBooking = async () => {
         if (!passengerName || !phoneNumber) {
             toast.error("Please fill in all details")
+            return
+        }
+
+        if (!searchData) {
+            toast.error("Search data is missing")
             return
         }
 
@@ -77,15 +100,6 @@ export function BookingSection() {
             setSelectedSeats([])
             setPassengerName("")
             setPhoneNumber("")
-            // Trigger refresh of seats - passing a timestamp or toggle to SeatLayout? 
-            // Or just allow SeatLayout to re-render. 
-            // Since props didn't change, specific seat refresh might be needed.
-            // But if I clear selectedSeats, SeatLayout rerenders only seleciton.
-            // I need to re-fetch bookings.
-            // I can force re-fetch by updating a key or passing a strict signal.
-            // For now, let's just close. Ideally, user searches again or we auto-refresh.
-            // Actually, I can clear searchData to force re-search, but that's annoying.
-            // Maybe handleSearch again? 
 
         } catch (error) {
             console.error(error)
@@ -106,7 +120,7 @@ export function BookingSection() {
 
             {/* Search Form */}
             <div className="mb-12">
-                <SearchForm busData={searchData} onSearch={handleSearch} />
+                <SearchForm onSearch={handleSearch} />
             </div>
 
             {/* Results Area */}
@@ -128,13 +142,15 @@ export function BookingSection() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <SeatLayout
-                                    onSeatSelect={setSelectedSeats}
-                                    busDetails={{
-                                        id: searchData.scheduleId,
-                                        date: searchData.date.toISOString()
-                                    }}
-                                />
+                                {searchData.scheduleId && (
+                                    <SeatLayout
+                                        onSeatSelect={setSelectedSeats}
+                                        busDetails={{
+                                            id: searchData.scheduleId,
+                                            date: searchData.date.toISOString()
+                                        }}
+                                    />
+                                )}
                             </CardContent>
                         </Card>
                     </div>
@@ -197,7 +213,7 @@ export function BookingSection() {
             )}
             {/* Booking Modal */}
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-100">
                     <DialogHeader>
                         <DialogTitle>Confirm Booking</DialogTitle>
                         <DialogDescription>

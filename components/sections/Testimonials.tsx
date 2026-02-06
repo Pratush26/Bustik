@@ -77,14 +77,14 @@ export function Testimonials() {
                             <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                                 <div className="p-1">
                                     <Card className="h-full border-none shadow-md">
-                                        <CardContent className="flex flex-col justify-between h-[300px] p-6">
+                                        <CardContent className="flex flex-col justify-between h-75 p-6">
                                             <div>
                                                 <div className="flex gap-1 mb-4 text-yellow-500">
                                                     {Array.from({ length: item.rating }).map((_, i) => (
                                                         <Star key={i} className="h-4 w-4 fill-current" />
                                                     ))}
                                                 </div>
-                                                <p className="text-muted-foreground italic mb-6">"{item.content}"</p>
+                                                <p className="text-muted-foreground italic mb-6">{item.content}</p>
                                             </div>
 
                                             <div className="flex items-center gap-4 mt-auto">
