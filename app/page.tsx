@@ -4,9 +4,9 @@ import { Hero } from "@/components/sections/Hero";
 import { Statistics } from "@/components/sections/Statistics";
 import { BookingSection } from "@/components/sections/BookingSection";
 import { AboutUs } from "@/components/sections/AboutUs";
-import { Testimonials } from "@/components/sections/Testimonials";
-import { Contact } from "@/components/sections/Contact";
-import { Feedback } from "@/components/sections/Feedback";
+// import { Testimonials } from "@/components/sections/Testimonials";
+// import { Contact } from "@/components/sections/Contact";
+// import { Feedback } from "@/components/sections/Feedback";
 
 import { MapSection } from "@/components/sections/MapSection";
 import { FAQ } from "@/components/sections/FAQ";
@@ -20,10 +20,10 @@ export default function Home() {
       <BookingSection />
       <MapSection />
       <AboutUs />
-      <Testimonials />
+      {/* <Testimonials /> */}
       <FAQ />
-      <Contact />
-      <Feedback />
+      {/* <Contact /> */}
+      {/* <Feedback /> */}
       <Footer />
     </main>
   );
