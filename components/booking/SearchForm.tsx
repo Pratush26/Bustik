@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { LOCATIONS, BUS_TYPES, AVAILABLE_TIMES } from "@/lib/data"
+import { useEffect, useState } from "react"
 
 const formSchema = z.object({
     from: z.string().min(1, "Please select a departure city."),
@@ -44,6 +45,25 @@ export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
     })
+    const [schedule, setSchedule] = useState([])
+
+    useEffect(() => {
+        const fetchdata = async () => {
+            try {
+                const res = await fetch("/api/schedule", {
+                    cache: "no-store"
+                });
+                if (!res.ok) throw new Error("Failed to fetch");
+
+                const result = await res.json();
+                setSchedule(result ?? result);
+            } catch (err: unknown) {
+                setSchedule([]);
+                console.error(err)
+            }
+        };
+        fetchdata();
+    }, []);
 
     function onSubmit(data: z.infer<typeof formSchema>) {
         // Validate different origin/dest

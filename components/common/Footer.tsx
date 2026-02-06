@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react"
+import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"
 
 export function Footer() {
     return (
@@ -18,22 +18,22 @@ export function Footer() {
 
                     <div>
                         <h4 className="font-bold mb-4">Quick Links</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="#home" className="hover:text-primary">Home</Link></li>
-                            <li><Link href="#booking" className="hover:text-primary">Book Ticket</Link></li>
-                            <li><Link href="#about" className="hover:text-primary">About Us</Link></li>
-                            <li><Link href="#contact" className="hover:text-primary">Contact</Link></li>
-                        </ul>
+                        <div className="flex flex-col gap-3 text-sm text-muted-foreground">
+                            <Link href="#home" className="hover:text-primary">Home</Link>
+                            <Link href="#booking" className="hover:text-primary">Book Ticket</Link>
+                            <Link href="#about" className="hover:text-primary">About Us</Link>
+                            <Link href="#contact" className="hover:text-primary">Contact</Link>
+                        </div>
                     </div>
 
                     <div>
                         <h4 className="font-bold mb-4">Support</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="#" className="hover:text-primary">FAQ</Link></li>
-                            <li><Link href="#" className="hover:text-primary">Terms of Service</Link></li>
-                            <li><Link href="#" className="hover:text-primary">Privacy Policy</Link></li>
-                            <li><Link href="#" className="hover:text-primary">Help Center</Link></li>
-                        </ul>
+                        <div className="flex flex-col gap-3 text-sm text-muted-foreground">
+                            <Link href="#faqs" className="hover:text-primary">FAQ</Link>
+                            <Link href="#" className="hover:text-primary">Terms of Service</Link>
+                            <Link href="#" className="hover:text-primary">Privacy Policy</Link>
+                            <Link href="#" className="hover:text-primary">Help Center</Link>
+                        </div>
                     </div>
 
                     <div>

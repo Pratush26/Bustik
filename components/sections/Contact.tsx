@@ -123,7 +123,7 @@ export function Contact() {
                                             <FormItem>
                                                 <FormLabel>Message</FormLabel>
                                                 <FormControl>
-                                                    <Textarea placeholder="How can we help?" className="min-h-[120px]" {...field} />
+                                                    <Textarea placeholder="How can we help?" className="min-h-30" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

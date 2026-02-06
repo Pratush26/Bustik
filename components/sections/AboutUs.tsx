@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import Link from "next/link"
 
 export function AboutUs() {
     return (
@@ -24,12 +22,12 @@ export function AboutUs() {
                     </div>
                 </div>
 
-                <div className="relative h-[400px] rounded-2xl overflow-hidden bg-gradient-to-tr from-blue-600/20 to-purple-600/20 flex items-center justify-center">
+                <div className="relative h-100 rounded-2xl overflow-hidden bg-linear-to-tr from-blue-600/20 to-purple-600/20 flex items-center justify-center">
                     <Image
                         src={'https://images.unsplash.com/photo-1557223562-6c77ef16210f?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
                         fill
                         alt="bus image"
-                        className="object-cover"
+                        className="object-cover grayscale-25 contrast-125"
                     />
                 </div>
             </div>

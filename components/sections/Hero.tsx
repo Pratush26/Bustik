@@ -5,7 +5,7 @@ import Link from "next/link"
 export function Hero() {
     return (
         <section id="home" className="relative min-h-[90vh] flex items-center w-full overflow-hidden">
-            <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary/5 via-background to-background" />
+            <div className="absolute inset-0 z-0 bg-linear-to-br from-primary/5 via-background to-background" />
 
             <div className="w-11/12 mx-auto z-10 grid md:grid-cols-2 gap-12 items-center">
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-1000">
@@ -44,7 +44,7 @@ export function Hero() {
                     </div>
                 </div>
 
-                <div className="relative h-[400px] rounded-2xl overflow-hidden bg-gradient-to-tr from-blue-600/20 to-purple-600/20 flex items-center justify-center">
+                <div className="relative h-100 rounded-2xl overflow-hidden bg-linear-to-tr from-blue-600/20 to-purple-600/20 flex items-center justify-center">
                     <Image
                         src={'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
                         fill

@@ -81,7 +81,7 @@ export function Feedback() {
                                 <FormItem>
                                     <FormLabel>Tell us more</FormLabel>
                                     <FormControl>
-                                        <Textarea placeholder="What did you like? What can we do better?" className="min-h-[100px]" {...field} />
+                                        <Textarea placeholder="What did you like? What can we do better?" className="min-h-25" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

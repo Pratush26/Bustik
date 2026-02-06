@@ -4,7 +4,7 @@ import dynamic from "next/dynamic"
 
 const Map = dynamic(() => import("@/components/map/Map"), {
     ssr: false,
-    loading: () => <div className="h-[500px] w-full rounded-xl bg-muted animate-pulse flex items-center justify-center">Loading Map...</div>
+    loading: () => <div className="h-125 w-full rounded-xl bg-muted animate-pulse flex items-center justify-center">Loading Map...</div>
 })
 
 export function MapSection() {
