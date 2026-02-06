@@ -35,7 +35,7 @@ export function BookingSection() {
         setSelectedSeats([])
     }
 
-    const totalPrice = selectedSeats.reduce((sum, seat) => sum + seat.price, 0)
+    const totalPrice = selectedSeats.length * (searchData?.ticketPrice || 0)
 
     return (
         <section id="booking" className="py-20 container mx-auto px-4 min-h-screen">

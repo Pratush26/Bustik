@@ -8,6 +8,9 @@ import { Testimonials } from "@/components/sections/Testimonials";
 import { Contact } from "@/components/sections/Contact";
 import { Feedback } from "@/components/sections/Feedback";
 
+import { MapSection } from "@/components/sections/MapSection";
+import { FAQ } from "@/components/sections/FAQ";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -15,8 +18,10 @@ export default function Home() {
       <Hero />
       <Statistics />
       <BookingSection />
+      <MapSection />
       <AboutUs />
       <Testimonials />
+      <FAQ />
       <Contact />
       <Feedback />
       <Footer />

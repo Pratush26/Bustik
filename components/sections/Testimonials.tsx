@@ -6,11 +6,10 @@ import {
     Carousel,
     CarouselContent,
     CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
 } from "@/components/ui/carousel"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Star } from "lucide-react"
+import Autoplay from "embla-carousel-autoplay"
 
 const testimonials = [
     {
@@ -40,30 +39,44 @@ const testimonials = [
         content: "Great experience! The bus was on time and exactly as described in the app.",
         avatar: "DW",
         rating: 5
+    },
+    {
+        name: "Priya Patel",
+        role: "Business Traveler",
+        content: "I appreciate the punctual bus updates and the clean buses. Highly recommended.",
+        avatar: "PP",
+        rating: 5
     }
 ]
 
 export function Testimonials() {
+    const plugin = React.useRef(
+        Autoplay({ delay: 3000, stopOnInteraction: true })
+    )
+
     return (
-        <section className="py-24 container mx-auto px-4">
+        <section className="py-24 container mx-auto px-4 bg-muted/20">
             <div className="text-center mb-16">
                 <h2 className="text-3xl font-bold mb-4">What Our Users Say</h2>
                 <p className="text-muted-foreground">Real feedback from real travelers.</p>
             </div>
 
-            <div className="px-12">
+            <div className="px-4 md:px-12">
                 <Carousel
+                    plugins={[plugin.current]}
                     opts={{
                         align: "start",
                         loop: true,
                     }}
                     className="w-full"
+                    onMouseEnter={plugin.current.stop}
+                    onMouseLeave={plugin.current.reset}
                 >
                     <CarouselContent>
                         {testimonials.map((item, index) => (
                             <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                                 <div className="p-1">
-                                    <Card className="h-full">
+                                    <Card className="h-full border-none shadow-md">
                                         <CardContent className="flex flex-col justify-between h-[300px] p-6">
                                             <div>
                                                 <div className="flex gap-1 mb-4 text-yellow-500">
@@ -89,8 +102,6 @@ export function Testimonials() {
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
                 </Carousel>
             </div>
         </section>

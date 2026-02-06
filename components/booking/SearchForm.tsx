@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { CalendarIcon, MapPin } from "lucide-react"
-import { format } from "date-fns"
+import { CalendarIcon, MapPin, Bus } from "lucide-react"
+import { format, addDays } from "date-fns"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -30,15 +30,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner"
-
-const locations = [
-    "New York",
-    "Boston",
-    "Washington DC",
-    "Philadelphia",
-    "Miami",
-    "Chicago",
-]
+import { LOCATIONS, BUS_TYPES, AVAILABLE_TIMES } from "@/lib/data"
 
 const formSchema = z.object({
     from: z.string().min(1, "Please select a departure city."),
@@ -47,9 +39,10 @@ const formSchema = z.object({
         required_error: "A date of travel is required.",
     }),
     time: z.string().min(1, "Please select a time."),
+    busId: z.string().min(1, "Please select a bus."),
 })
 
-export function SearchForm({ onSearch }: { onSearch: (data: z.infer<typeof formSchema>) => void }) {
+export function SearchForm({ onSearch }: { onSearch: (data: any) => void }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
     })
@@ -60,14 +53,22 @@ export function SearchForm({ onSearch }: { onSearch: (data: z.infer<typeof formS
             toast.error("Origin and Destination cannot be the same")
             return
         }
-        onSearch(data)
+
+        // Find detailed bus info
+        const selectedBus = BUS_TYPES.find(b => b.id === data.busId)
+
+        onSearch({
+            ...data,
+            busName: selectedBus?.name,
+            ticketPrice: selectedBus?.price,
+        })
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-0 md:flex md:gap-4 items-end bg-card p-6 rounded-xl shadow-lg border">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="bg-card p-6 rounded-xl shadow-lg border space-y-6">
 
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <FormField
                         control={form.control}
                         name="from"
@@ -84,7 +85,7 @@ export function SearchForm({ onSearch }: { onSearch: (data: z.infer<typeof formS
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {locations.map(loc => (
+                                        {LOCATIONS.map(loc => (
                                             <SelectItem key={loc} value={loc}>{loc}</SelectItem>
                                         ))}
                                     </SelectContent>
@@ -110,7 +111,7 @@ export function SearchForm({ onSearch }: { onSearch: (data: z.infer<typeof formS
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {locations.map(loc => (
+                                        {LOCATIONS.map(loc => (
                                             <SelectItem key={loc} value={loc}>{loc}</SelectItem>
                                         ))}
                                     </SelectContent>
@@ -150,9 +151,11 @@ export function SearchForm({ onSearch }: { onSearch: (data: z.infer<typeof formS
                                             mode="single"
                                             selected={field.value}
                                             onSelect={field.onChange}
-                                            disabled={(date) =>
-                                                date < new Date() || date < new Date("1900-01-01")
-                                            }
+                                            disabled={(date) => {
+                                                const today = new Date();
+                                                const maxDate = addDays(today, 20);
+                                                return date < new Date(today.setHours(0, 0, 0, 0)) || date > maxDate;
+                                            }}
                                             initialFocus
                                         />
                                     </PopoverContent>
@@ -175,11 +178,9 @@ export function SearchForm({ onSearch }: { onSearch: (data: z.infer<typeof formS
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        <SelectItem value="08:00 AM">08:00 AM</SelectItem>
-                                        <SelectItem value="10:00 AM">10:00 AM</SelectItem>
-                                        <SelectItem value="01:00 PM">01:00 PM</SelectItem>
-                                        <SelectItem value="04:00 PM">04:00 PM</SelectItem>
-                                        <SelectItem value="08:00 PM">08:00 PM</SelectItem>
+                                        {AVAILABLE_TIMES.map(t => (
+                                            <SelectItem key={t} value={t}>{t}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -188,7 +189,39 @@ export function SearchForm({ onSearch }: { onSearch: (data: z.infer<typeof formS
                     />
                 </div>
 
-                <Button type="submit" size="lg" className="w-full md:w-auto">Search Buses</Button>
+                <div className="grid md:grid-cols-2 gap-6 items-end">
+                    <FormField
+                        control={form.control}
+                        name="busId"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Choose Bus</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <div className="flex items-center gap-2">
+                                                <Bus className="h-4 w-4 text-muted-foreground" />
+                                                <SelectValue placeholder="Select valid bus" />
+                                            </div>
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {BUS_TYPES.map(bus => (
+                                            <SelectItem key={bus.id} value={bus.id}>
+                                                {bus.name} - ${bus.price}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <Button type="submit" size="lg" className="w-full">
+                        Check Available Seats
+                    </Button>
+                </div>
             </form>
         </Form>
     )
